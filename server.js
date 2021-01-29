@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const Article = require('./models/article');
 const articleRoute = require('./routes/article');
 
 const app = express();
@@ -8,21 +9,18 @@ mongoose.connect('mongodb://localhost/blog',{ useNewUrlParser: true , useUnified
 
 app.set('view engine','ejs');
 
-app.use('/articles',articleRoute);
+app.use(express.urlencoded({ extended: false}));
 
-const article = [{
-    title : 'test title',
-    date : new Date(),
-    description : 'test description'
-},{
-    title : 'test title 2',
-    date : new Date(),
-    description : 'test description'
-}];
 
-app.get('/',(req,res)=>{
+
+
+app.get('/', async (req,res)=>{
+
+    const article = await Article.find();
     res.render('articles/index',{article : article});
 });
+
+app.use('/articles',articleRoute);
 
 const PORT = process.env.PORT || 3000;
 
